@@ -1,0 +1,47 @@
+#"\t": menu-complete
+# shift-TAB to menu-complete backwards
+# cf. http://www.tikirobot.net/wp/2006/03/29/reverse-menu-complete-in-bash/
+#\C-y: "\e--\C-i"
+##\C-y:"\M--\C-i"
+
+#Filename completion/expansion
+set show-all-if-ambiguous on
+set show-all-if-unmodified on
+set completion-ignore-case on
+set blink-matching-paren on
+
+# Match all files
+set match-hidden-files on
+
+# 'Magic Space'
+# Insert a space character then performs
+# a history expansion in the line
+# enable option to expand & edit a command before running it by entering a [space]
+$if Bash
+Space: magic-space # (ruins ipython in osx)   ;;
+$endif
+
+#
+
+
+# Append "/" to all dirnames
+set mark-directories on
+set mark-symlinked-directories on
+
+
+# up & down arrow keys
+"\e[A": history-search-backward
+"\e[B": history-search-forward
+"\C-[[A": history-search-backward
+"\C-[[B": history-search-forward
+
+
+
+# op[esc-h] will show the last command that began with op
+#"\eh": dynamic-complete-history
+
+"\e[1~": beginning-of-line
+"\e[4~": end-of-line 
+"\e[5C": forward-word
+"\e[5D": backward-word 
+"\e[3~": delete-char

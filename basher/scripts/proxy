@@ -1,0 +1,282 @@
+#!/usr/bin/python
+
+import ConfigParser
+#import os, sys, re, subprocess
+import tempfile
+import subprocess
+import os, sys, re
+import signal
+from threading import Thread
+import logging
+logging.basicConfig(level=logging.DEBUG)
+
+class CommandRunError(Exception): pass
+
+def getCommandOut(cmd, failonfail=True):
+    """
+    cmd - command to execute
+    
+    gathers output of command (stderr and stdout) into a temp file
+    
+    returns the output of the command
+    """
+    #logging.debug('starting %s' % cmd)
+    
+    temp = tempfile.TemporaryFile('w+t')
+    try:
+        p = subprocess.Popen(cmd.split(), stderr=subprocess.STDOUT,stdout=temp.fileno())
+        #pid, status = os.waitpid(p.pid,0) #@UnusedVariable
+        status = p.wait()
+        temp.seek(0)
+        out = temp.read()
+        if status != 0 and failonfail:
+            raise CommandRunError("COMMAND: %s\tFAILED: %s%s%s" % (cmd, status, '\n', out))
+        #logging.debug('finished %s' % cmd)
+    finally: 
+        temp.close()
+    
+    logging.info('ran %s: %s' % (cmd, out))
+    #print "getCommandOut: ", out
+    return out
+        
+
+
+def getPipedCommandOut(cmd):
+    """
+    cmd - command to execute
+
+    gathers output of command (stderr and stdout) into a temp file
+
+    returns the output of the command
+    """
+    #logging.debug('starting %s' % cmd)
+    
+    temp = tempfile.TemporaryFile('w+t')
+    try:
+        p = subprocess.Popen(cmd, stderr=subprocess.STDOUT,stdout=temp.fileno(), shell=True)
+        #pid, status = os.waitpid(p.pid,0) #@UnusedVariable
+        status = p.wait()
+        temp.seek(0)
+        out = temp.read()
+        if status != 0:
+            raise CommandRunError("COMMAND: %s\tFAILED: %s%s%s" % (cmd, status, os.linesep, out))
+        #logging.debug('finished %s' % cmd)
+    finally: 
+        temp.close()
+        
+    logging.info('ran %s: %s' % (cmd, out))    
+    return out
+    
+
+class Gateway:
+    def __init__(self, createtunnelcmd, servername, serverport):
+        self.createtunnelcmd = createtunnelcmd
+        self.tunnelpid = None
+        self. servername = servername
+        self. serverport = serverport        
+        self.hosts = []
+        
+    def createTunnel(self):
+        #logging.debug("creating tunnel: %s" % self.createtunnelcmd)
+        getPipedCommandOut( self.createtunnelcmd)
+        #self.tunnelpid = p.pid
+        #logging.debug("tunnel created!")
+
+    def getEtcHosts(self):
+        return [host.getEtcHost() for host in self.hosts]
+
+    def getLoopbackSetup(self):
+        return [host.getLoopbackSetup() for host in self.hosts]
+
+    def getDivert(self):
+        ret = []
+        for host in self.hosts:
+            ret.extend(host.getDivert())
+        return ret
+
+    def getSshTunnel(self):
+        return ["ssh -g -a -N -T %s -p %d %s\n" % \
+            (' '.join([host.getSshTunnel() for host in self.hosts]), \
+            self.serverport, self.servername)]
+
+class Host:
+    def __init__(self, name, loopbackNo):
+        self.name = name
+        self.loopbackNo = loopbackNo
+        self.ports = []
+
+    def getEtcHost(self):
+        return "127.0.0." + str(self.loopbackNo) + "      " + self.name
+
+    def getLoopbackSetup(self):
+        return "ifconfig lo0 127.0.0.%d alias" % self.loopbackNo
+
+    def getDivert(self):
+        ret = []
+        for port in self.ports:
+            ret.extend(port.getDivert("127.0.0.%d" % self.loopbackNo))
+        return ret
+
+    def getSshTunnel(self):
+        return ' '.join([ port.getSshTunnel(self.name) for port in self.ports])
+
+class Port:
+    def __init__(self, remotePort, divertPort, localPort):
+        self.remotePort = remotePort
+        self.divertPort = divertPort
+        self.localPort = localPort
+
+    def getDivert(self, loopbackAddress):
+        return ["ipfw add divert %d log tcp from me to %s\n" % (self.divertPort, loopbackAddress), 
+        "ipfw add divert %d log tcp from %s %d to me\n" % (self.divertPort, loopbackAddress, self.localPort),
+        "natd -l -port %d -interface lo0 -proxy_only -proxy_rule port %d server %s:%d" % (self.divertPort, self.remotePort, loopbackAddress, self.localPort)
+        ]
+
+    def getSshTunnel(self, hostname):
+        return "-L%d:%s:%d" % (self.localPort, hostname, self.remotePort)
+
+def readConfig(configfile):
+    loopbackNo = 11
+    portNo = 10000
+    c = ConfigParser.ConfigParser()
+    c.read(configfile)
+    gateways = []
+    for s in c.sections():
+        print "in section ", s
+        tunnelcreation, destination = s.split('|')
+        #logging.debug("tunnelcreation: %s" % tunnelcreation)
+        #logging.debug("destination %s" % destination)
+        address, port = destination.split(':')
+        g = Gateway(tunnelcreation, address, int(port))
+        for k, v in sorted(c.items(s)):
+            host = Host(k, loopbackNo)
+            for p in v.split(','):
+                host.ports.append(Port(int(p), portNo,  portNo + 1))
+                portNo = portNo + 2
+            g.hosts.append(host)
+            loopbackNo = loopbackNo + 1
+        gateways.append(g)
+    return gateways
+
+
+
+def runLine(line):
+    if len(line.strip()) > 0:
+        #print "EXECUTING: ", line
+        out = getCommandOut(line)
+        #logging.info("RECEIVED: "+out)
+
+def run(gateways, func):
+    for g in gateways:
+        for line in func(g):
+            runLine(line)
+
+backgrounded = []
+
+def runInBG(gateways, func):
+    global backgrounded
+    for g in gateways:
+        for line in func(g):
+            #getCommandOut(line)
+            t = Thread(target=getCommandOut, args=(line,))
+            backgrounded.append(t)
+            t.start()
+
+def readCleanedEtcHosts():
+    h = None
+    try:
+        h = open('/etc/hosts')
+        lines =  h.readlines()
+        p = re.compile('127.0.0.[0-9]{2}')
+        lines = filter(lambda line: not p.search(line) and not line.strip()=='', lines)
+        while len(lines[-1].strip()) == 0:
+            lines = lines[:-1]
+        return lines
+    finally:
+        if h:
+            h.close()
+
+def writeEtcHosts(lines):
+    h = None
+    try:
+        h = open('/etc/hosts', 'w')
+        h.write('\n'.join([line.strip() for line in lines]))
+        h.write('\n')
+        logging.info( '\n'.join(lines))
+    finally:
+        if h:
+            h.close()
+
+def appendEtcHosts(gateways):
+    p = re.compile('127.0.0.[0-9]{2}')
+    lines = readCleanedEtcHosts()
+    lines = filter(lambda line: not p.search(line), lines)
+    for g in gateways:
+        lines.extend(g.getEtcHosts())
+    writeEtcHosts(lines)
+
+
+def cleanup():
+    global gateways
+    getCommandOut("killall natd", False)
+    getCommandOut("ipfw -f flush", False)
+    writeEtcHosts(readCleanedEtcHosts())
+    getCommandOut("sysctl -w net.inet.ip.fw.verbose=0", False)
+    for gw in gateways:
+        if gw.tunnelpid:
+            getCommandOut("kill %s" % gw.tunnelpid, False)
+    
+class SigHandler:
+    def __call__(self, sn, sf):
+        cleanup()
+        sys.exit(0)
+
+
+def makeproxy(configfile):
+    global gateways
+    sh = SigHandler()
+    old_SIGINT_Handler = signal.signal(signal.SIGINT,sh)
+    gateways = readConfig(configfile)
+    try:
+        for gateway in gateways:
+            print "connecting to ", gateway.createtunnelcmd ," with ", len(gateway.hosts), "hosts ..."
+            gateway.createTunnel()
+        run(gateways, Gateway.getLoopbackSetup)
+        run(gateways, Gateway.getDivert)
+        appendEtcHosts(gateways)
+        runInBG(gateways, Gateway.getSshTunnel)
+        for t in backgrounded: 
+            t.join()
+    finally:
+        cleanup()
+
+
+def main(argv=None):
+    global options, gateways
+    gateways = []
+    #loglevel=logging.DEBUG #logging.WARNING
+    if argv is None:
+        argv = sys.argv[1:]
+    if len(argv)==1 and argv[0] == 'clean':
+        print "cleaning up..."
+        cleanup()
+        return
+    elif len(argv)==1:
+        configfile = argv[0]
+    elif len(argv)==0:
+        scriptdir = os.path.dirname( os.path.realpath( __file__ ) )
+        configfile = os.path.join(scriptdir,"defaultproxy.properties")
+    
+    
+    if os.path.exists(configfile):        
+        makeproxy(configfile)
+        
+
+    else:
+        logging.error("invalid arguments %s. expects path_to_config_file or 'clean'" % ",".join(sys.argv[1:]))
+        
+	#options, args = readoptions(argv)
+
+
+if __name__ == "__main__":
+	sys.exit(main())

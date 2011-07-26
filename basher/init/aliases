@@ -1,0 +1,79 @@
+# ALIASES
+
+# Don't overwrite/delete without asking me first!
+alias rm='rm -i'
+alias mv='mv -i'
+alias cp='cp -i'
+
+# function shortcuts
+alias cd=cd_func
+alias ips='ifconfig | grep "inet "'
+alias sup='svn_up_and_log'
+# file merge diff for svn
+#undo prev commit:
+alias svnundocommit='svn merge -r COMMITTED:PREV .'
+ 
+alias scpresume='rsync --partial --progress -avzr'
+
+
+
+
+# fix ls
+export LS_OPTIONS='--color=auto'
+
+case $OSTYPE in
+    cygwin*)
+        export CLICOLOR='true'
+    ;;
+    darwin*)
+        alias killtunnelandproxy='sudo killall natd & sudo ipfw -f flush & sudo sysctl -w net.inet.ip.fw.verbose=0 && killall ssh'
+        # gui svn diff with file merge. requires developers tools installed and http://soft.vub.ac.be/svn-gen/bdefrain/fmscripts
+        alias sfmdiff='svn diff --diff-cmd fmdiff'
+        
+        # easily hibernate or not
+        alias hibernateon='sudo pmset -a hibernatemode 1'
+        alias hibernateoff='sudo pmset -a hibernatemode 0'
+
+        alias dashboardkill='defaults write com.apple.dashboard mcx-disabled -boolean YES && killall Dock'
+
+        # faster mate
+        alias m='mate'
+		
+		# textwrangler from command line
+		alias wrangle='open -b com.barebones.textwrangler'
+		
+		whichls=`which ls`
+	    if [ "$whichls" == "/bin/ls" ]; then
+			export LS_OPTIONS=''
+			export CLICOLOR=1
+			export LSCOLORS=ExFxCxDxBxegedabagacad			
+		fi
+	    
+    ;;
+    linux*)
+    ;;
+	*)
+    ;;
+esac
+
+alias ls='ls $LS_OPTIONS -F -axh'
+
+alias grep="grep --color"
+
+# MULE plugin creates client for stubs for webservice
+alias mvnws='mvn org.apache.cxf:cxf-codegen-plugin:wsdl2java; find src -name ".*DONE" -exec rm "{}" \;'
+
+# delete extras
+alias rmsvn='find . -name .svn -exec rm -rf "{}" \;'
+alias rmpyc='find . -name "*.pyc" -exec rm -rf "{}" \;'
+alias rmDS_STORE='find . -name ".DS_Store" -exec rm -rf "{}" \;'
+
+
+# threads live on production:
+alias prodwebthreads='jconsole poc-app03:10000'
+
+
+# python 
+alias pysitepackages='python -c "from distutils.sysconfig import get_python_lib; print get_python_lib()"'
+
+#
