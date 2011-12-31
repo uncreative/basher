@@ -56,6 +56,14 @@ case $OSTYPE in
     ;;
 esac
 
+
+
+if [ -f /usr/local/bin/src-hilite-lesspipe.sh ]; then
+    export LESSOPEN="| /usr/local/bin/src-hilite-lesspipe.sh %s"
+    export LESS=' -R '
+fi
+
+
 alias ls='ls $LS_OPTIONS -F -axh'
 
 alias grep="grep --color"
