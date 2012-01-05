@@ -44,7 +44,7 @@ esac
 
 sourcedirifthere () { # doesn't work in linux
     local DIRtoSOURCE="$1"
-    
+
     for script in $DIRtoSOURCE/[a-zA-Z0-9]* ; do
         if [ -r $script ] ; then
             sourc $script
@@ -52,7 +52,7 @@ sourcedirifthere () { # doesn't work in linux
     done
 }
 #doesn't work in linux
-#sourcedirifthere /etc/bash/func/all 
+#sourcedirifthere /etc/bash/func/all
 #sourcedirifthere /etc/bash/func/$funcdir
 
 # define some functions
@@ -88,17 +88,18 @@ source $BASHINITPATH/loadcompleters
 source $BASHINITPATH/histopts
 source $BASHINITPATH/aliases
 source $BASHINITPATH/prompt
+source $BASHINITPATH/thirdparty.sh
 
 if [ -f $ETC/bashrc.hostspecific ]; then
     source $ETC/bashrc.hostspecific
-fi    
+fi
 
 
 ################# NOW OVERRIDE WITH USER SPECIFIC #################
 
 if [ -f $HOME/.bashrc.user ]; then
     source $HOME/.bashrc.user
-fi    
+fi
 
 
 unset funcdir
