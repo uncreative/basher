@@ -81,12 +81,9 @@ hostusercolor(){
 
 function jobsrunning(){
     local numjobs
-    local runjobs
     numjobs=`jobs|\\grep -v autojump|wc -l|sed 's/ *//g'`
-    runjobs=`jobs`
     if [[ ${numjobs} != '0' ]]; then
         echo "(${numjobs}) "
-        # echo "  ${runjobs}"
     fi
 
     return 0
