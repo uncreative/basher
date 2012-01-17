@@ -12,10 +12,11 @@ alias sup='svn_up_and_log'
 # file merge diff for svn
 #undo prev commit:
 alias svnundocommit='svn merge -r COMMITTED:PREV .'
- 
+
 alias scpresume='rsync --partial --progress -avzr'
 
-
+alias ips="ifconfig -a | perl -nle'/(\d+\.\d+\.\d+\.\d+)/ && print $1'"
+alias myip="dig +short myip.opendns.com @resolver1.opendns.com"
 
 
 # fix ls
@@ -29,7 +30,7 @@ case $OSTYPE in
         alias killtunnelandproxy='sudo killall natd & sudo ipfw -f flush & sudo sysctl -w net.inet.ip.fw.verbose=0 && killall ssh'
         # gui svn diff with file merge. requires developers tools installed and http://soft.vub.ac.be/svn-gen/bdefrain/fmscripts
         alias sfmdiff='svn diff --diff-cmd fmdiff'
-        
+
         # easily hibernate or not
         alias hibernateon='sudo pmset -a hibernatemode 1'
         alias hibernateoff='sudo pmset -a hibernatemode 0'
@@ -38,17 +39,17 @@ case $OSTYPE in
 
         # faster mate
         alias m='mate'
-		
+
 		# textwrangler from command line
 		alias wrangle='open -b com.barebones.textwrangler'
-		
+
 		whichls=`which ls`
 	    if [ "$whichls" == "/bin/ls" ]; then
 			export LS_OPTIONS=''
 			export CLICOLOR=1
-			export LSCOLORS=ExFxCxDxBxegedabagacad			
+			export LSCOLORS=ExFxCxDxBxegedabagacad
 		fi
-	    
+
     ;;
     linux*)
     ;;
@@ -81,7 +82,7 @@ alias rmDS_STORE='find . -name ".DS_Store" -exec rm -rf "{}" \;'
 alias prodwebthreads='jconsole poc-app03:10000'
 
 
-# python 
+# python
 alias pysitepackages='python -c "from distutils.sysconfig import get_python_lib; print get_python_lib()"'
 
 #

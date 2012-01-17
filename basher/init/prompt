@@ -1,5 +1,5 @@
 NO_COLOR="\[\e[0m\]"    # unsets color to term's fg color
- 
+
 # regular colors
 K="\[\e[0;30m\]"    # black
 R="\[\e[0;31m\]"    # red
@@ -36,7 +36,7 @@ serverrole(){
     # Is the role explicitly set in the system directory?
     if [ -f $ETC/server-role ] ; then
         SERVER_ROLE=$(<$ETC/server-role)
-    # Is the role explicitly set in the home directory? 
+    # Is the role explicitly set in the home directory?
     elif [ -f ${HOME}/.server-role ] ; then
         SERVER_ROLE=$(<${HOME}/.server-role)
     # Should we set role based on host name?
@@ -51,8 +51,8 @@ serverrole(){
 
     SERVER_ROLE=`echo $SERVER_ROLE | tr "[:upper:]" "[:lower:]"` # # lowercase the role
     case $SERVER_ROLE in
-        prod*) 
-            ROLE_COLOR=$EMW$BGR 
+        prod*)
+            ROLE_COLOR=$EMW$BGR
             SERVER_ROLE=`echo $SERVER_ROLE | tr "[:lower:]" "[:upper:]"` # Uppercase the role
         ;;
         lab|test*) ROLE_COLOR=$Y ;;
@@ -81,11 +81,14 @@ hostusercolor(){
 
 function jobsrunning(){
     local numjobs
-    numjobs=`jobs|wc -l|sed 's/ *//g'`
+    local runjobs
+    numjobs=`jobs|\\grep -v autojump|wc -l|sed 's/ *//g'`
+    runjobs=`jobs`
     if [[ ${numjobs} != '0' ]]; then
         echo "(${numjobs}) "
+        # echo "  ${runjobs}"
     fi
-    
+
     return 0
 }
 
