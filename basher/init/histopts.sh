@@ -31,15 +31,17 @@ shopt -s histverify     # expand & edit a command before running it by entering 
 shopt -s histappend # ensure that the histories from the different terms will not overwrite themselves
 shopt -s cmdhist # multi-line commands are stored in the history as a single command
 
-case $OSTYPE in
-    cygwin*)
-    ;;
-    darwin*)
-        /bin/stty stop "" # enable [ctrl-s] (opposite of [ctrl-r])        
-    ;;
-    linux*)
-        /bin/stty stop "" # enable [ctrl-s] (opposite of [ctrl-r])            
-    ;;
-    *)
-    ;;
-esac
+
+#### LEAVE ctrl-s to freeze terminal hopefully. also this causes "stty: stdin isn't a terminal" error when sourcing bashrc and not in a terminal
+# case $OSTYPE in
+#     cygwin*)
+#     ;;
+#     darwin*)
+#         /bin/stty stop "" # enable [ctrl-s] (opposite of [ctrl-r])
+#     ;;
+#     linux*)
+#         /bin/stty stop "" # enable [ctrl-s] (opposite of [ctrl-r])
+#     ;;
+#     *)
+#     ;;
+# esac

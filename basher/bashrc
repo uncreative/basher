@@ -82,11 +82,11 @@ fi
 
 # set some options
 source $BASHINITPATH/fink
-#source $BASHINITPATH/path
-source $BASHINITPATH/loadcompleters
-source $BASHINITPATH/histopts
-source $BASHINITPATH/aliases
-source $BASHINITPATH/prompt
+#source $BASHINITPATH/path.sh
+source $BASHINITPATH/loadcompleters.sh
+source $BASHINITPATH/histopts.sh
+source $BASHINITPATH/aliases.sh
+source $BASHINITPATH/prompt.sh
 source $BASHINITPATH/thirdparty.sh
 
 if [ -f $ETC/bashrc.hostspecific ]; then
