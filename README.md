@@ -114,3 +114,11 @@ in .bash_profile or whichever file OS X now reads when you start terminal, appen
 ```bash
         source $HOME/.bashrc # get some extra functions and configs
 ```
+
+to make additional user specific configurations that are remembered in Dropbox:
+```
+mkdir -p ~/Dropbox/config
+touch ~/Dropbox/config/.bashrc.user.sh
+ln -s ~/Dropbox/config/.bashrc.user.sh ~/
+# make changes to above with your favorite editor
+```
