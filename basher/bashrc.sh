@@ -96,8 +96,8 @@ fi
 
 ################# NOW OVERRIDE WITH USER SPECIFIC #################
 
-if [ -f $HOME/.bashrc.user ]; then
-    source $HOME/.bashrc.user
+if [ -f $HOME/.bashrc.user.sh ]; then
+    source $HOME/.bashrc.user.sh
 fi
 
 
