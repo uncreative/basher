@@ -1,0 +1,1 @@
+source $HOME/.etc/basher/bashrc.sh # get some extra functions and configs

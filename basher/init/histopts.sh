@@ -6,6 +6,7 @@ if [[ ! -e $HISTFILE ]]; then
 	LASTHIST=`find ~/.history/ -type f -maxdepth 1 -name '[!.]*' -print|tail -1`
 	echo "removing dups from ${LASTHIST} (last history file)"
     python $BASHSCRIPTS/removedupswosort.py $LASTHIST
+    mkdir -p ~/.history
 	touch $HISTFILE
     if [[ -e $LASTHIST ]]; then
 		echo "getting last 1500 lines from ${LASTHIST}"

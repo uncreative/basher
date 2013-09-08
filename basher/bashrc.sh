@@ -83,8 +83,6 @@ fi
 
 
 # set some options
-source $BASHINITPATH/fink
-#source $BASHINITPATH/path.sh
 source $BASHINITPATH/loadcompleters.sh
 source $BASHINITPATH/histopts.sh
 source $BASHINITPATH/aliases.sh

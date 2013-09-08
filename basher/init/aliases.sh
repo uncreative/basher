@@ -37,9 +37,6 @@ case $OSTYPE in
 
         alias dashboardkill='defaults write com.apple.dashboard mcx-disabled -boolean YES && killall Dock'
 
-        # faster mate
-        alias m='mate'
-
 		# textwrangler from command line
 		alias wrangle='open -b com.barebones.textwrangler'
 
