@@ -93,15 +93,13 @@ if [ -f $ETC/bashrc.hostspecific ]; then
     source $ETC/bashrc.hostspecific
 fi
 
+unset funcdir
+
+# allows using git with https
+export GIT_SSL_NO_VERIFY=true
 
 ################# NOW OVERRIDE WITH USER SPECIFIC #################
 
 if [ -f $HOME/.bashrc.user.sh ]; then
     source $HOME/.bashrc.user.sh
 fi
-
-
-unset funcdir
-
-# allows using git with https
-export GIT_SSL_NO_VERIFY=true
