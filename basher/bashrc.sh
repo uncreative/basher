@@ -83,8 +83,6 @@ fi
 
 
 # set some options
-source $BASHINITPATH/fink
-#source $BASHINITPATH/path.sh
 source $BASHINITPATH/loadcompleters.sh
 source $BASHINITPATH/histopts.sh
 source $BASHINITPATH/aliases.sh
@@ -95,15 +93,13 @@ if [ -f $ETC/bashrc.hostspecific ]; then
     source $ETC/bashrc.hostspecific
 fi
 
-
-################# NOW OVERRIDE WITH USER SPECIFIC #################
-
-if [ -f $HOME/.bashrc.user ]; then
-    source $HOME/.bashrc.user
-fi
-
-
 unset funcdir
 
 # allows using git with https
 export GIT_SSL_NO_VERIFY=true
+
+################# NOW OVERRIDE WITH USER SPECIFIC #################
+
+if [ -f $HOME/.bashrc.user.sh ]; then
+    source $HOME/.bashrc.user.sh
+fi

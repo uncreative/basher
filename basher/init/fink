@@ -1,4 +1,0 @@
-# FINK
-if [ -e /sw/bin/ ]; then
-    test -r /sw/bin/init.sh && . /sw/bin/init.sh
-fi
