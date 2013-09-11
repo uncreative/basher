@@ -105,8 +105,8 @@ bashergitsource=`pwd`
 mkdir ~/.etc && cd ~/.etc
 ln -s $bashergitsource/basher/bashrc.hostspecific.sh .
 ln -s $bashergitsource/basher/basher .
-ln -s $bashergitsource/.inputrc ~/
-ln -s $bashergitsource/.bashrc ~/
+ln -s $bashergitsource/basher/.inputrc ~/
+ln -s $bashergitsource/basher/.bashrc ~/
 mkdir ~/.history
 mkdir ~/.ssh
 touch ~/.ssh/config
@@ -114,7 +114,7 @@ touch ~/.ssh/config
 
 in .bash_profile or whichever file OS X now reads when you start terminal, append:
 ```bash
-        source $HOME/.bashrc # get some extra functions and configs
+        echo "source $HOME/.bashrc # get some extra functions and configs" >> ~/.bash_profile
 ```
 
 to make additional user specific configurations that are remembered in Dropbox:
