@@ -18,7 +18,7 @@ fi
 export BASHINITPATH=$ETC/basher/init
 export BASHFUNCPATH=$ETC/basher/func
 export BASHSCRIPTS=$ETC/basher/scripts
-export PATH=$PATH:$BASHSCRIPTS
+export PATH=/usr/local/bin:/usr/local/sbin:$BASHSCRIPTS:$PATH
 
 case $OSTYPE in
     cygwin*)
@@ -81,7 +81,6 @@ then
 	eval `dircolors $dir_colors_file`
 fi
 
-
 # set some options
 source $BASHINITPATH/loadcompleters.sh
 source $BASHINITPATH/histopts.sh
@@ -89,8 +88,8 @@ source $BASHINITPATH/aliases.sh
 source $BASHINITPATH/prompt.sh
 source $BASHINITPATH/thirdparty.sh
 
-if [ -f $ETC/bashrc.hostspecific ]; then
-    source $ETC/bashrc.hostspecific
+if [ -f $ETC/bashrc.hostspecific.sh ]; then
+    source $ETC/bashrc.hostspecific.sh
 fi
 
 unset funcdir
