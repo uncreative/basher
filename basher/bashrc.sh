@@ -29,7 +29,7 @@ case $OSTYPE in
     darwin*)
         # to stop Finder writing .DS_Store files on network volumes
         # does this need to be commented out?
-        defaults write com.apple.desktopservices DSDontWriteNetworkStores true
+        # defaults write com.apple.desktopservices DSDontWriteNetworkStores true
         # source $BASHINITPATH/fink
         funcdir=darwin
         # does this need to be commented out?
