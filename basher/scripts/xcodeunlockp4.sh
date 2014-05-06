@@ -1,8 +1,7 @@
-#!/bin/sh
+#!/bin/bash
 
-bashrcfile=~/.bashrc
+bashrcfile=/etc/basher/bashrc.sh
 source ${bashrcfile}
-
 
 RESULT=`p4 edit  ${1#file://} 2>&1`
 SHRESULT=$?

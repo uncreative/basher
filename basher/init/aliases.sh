@@ -66,20 +66,14 @@ alias ls='ls $LS_OPTIONS -F -axh'
 
 alias grep="grep --color"
 
-# MULE plugin creates client for stubs for webservice
-alias mvnws='mvn org.apache.cxf:cxf-codegen-plugin:wsdl2java; find src -name ".*DONE" -exec rm "{}" \;'
-
 # delete extras
 alias rmsvn='find . -name .svn -exec rm -rf "{}" \;'
 alias rmpyc='find . -name "*.pyc" -exec rm -rf "{}" \;'
 alias rmDS_STORE='find . -name ".DS_Store" -exec rm -rf "{}" \;'
 
-
-# threads live on production:
-alias prodwebthreads='jconsole poc-app03:10000'
-
-
 # python
 alias pysitepackages='python -c "from distutils.sysconfig import get_python_lib; print( get_python_lib())"'
 
-#
+alias logcatb='logcat-color bejblitz'
+alias gdbb='ndk-gdb --start --verbose --force --exec=~/.gdbinitndk'
+alias logcatsym='adb logcat –d | ~/p4_managed/BejBlitz/adapt_touch_engineer/BejBlitz/projects/android/ndk-symbolicate ~/p4_managed/BejBlitz/adapt_touch_engineer/BejBlitz/projects/android/obj/local/armeabi'
